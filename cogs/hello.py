@@ -42,7 +42,7 @@ class HelloCog(commands.Cog):
 > 🔍get, search, weather
 > 🧰afk, now
 > 🔨kick, ban
-> 🚫reload
+> 🚫reload, echo
 ''')
 
     @commands.command(name="123")
