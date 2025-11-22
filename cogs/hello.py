@@ -40,7 +40,7 @@ class HelloCog(commands.Cog):
 > ❔help
 > 👍hello, good, 123
 > 🔍get, search, weather
-> 🧰afk, now
+> 🧰afk, now, math
 > 🔨kick, ban
 > 🚫reload, echo
 ''')
@@ -108,6 +108,72 @@ class HelloCog(commands.Cog):
         t = datetime.datetime.now().strftime('%H時')
         url = await self.bot.get_gif(t)
         await ctx.reply(url)
+
+    @commands.command(name="math")
+    @commands.cooldown(1, 5, type=commands.BucketType.guild)
+    @commands.guild_only()
+    async def math(self, ctx: commands.Context, formula: str):
+        headers = {
+            "accept": "*/*",
+            "accept-language": "ja,en-US;q=0.9,en;q=0.8",
+            "authorization": "Bearer undefined",
+            "content-type": "application/json",
+            "origin": "https://onecompiler.com",
+            "priority": "u=1, i",
+            "referer": "https://onecompiler.com/python",
+            "sec-ch-ua": '"Chromium";v="134", "Not:A-Brand";v="24", "Google Chrome";v="134"',
+            "sec-ch-ua-mobile": "?0",
+            "sec-ch-ua-platform": '"Windows"',
+            "sec-fetch-dest": "empty",
+            "sec-fetch-mode": "cors",
+            "sec-fetch-site": "same-origin",
+            "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.36",
+        }
+
+        json_data = {
+            "name": "Python",
+            "title": "Python Hello World",
+            "version": "3.6",
+            "mode": "python",
+            "description": None,
+            "extension": "py",
+            "concurrentJobs": 10,
+            "languageType": "programming",
+            "active": True,
+            "properties": {
+                "language": "python",
+                "docs": True,
+                "tutorials": True,
+                "cheatsheets": True,
+                "filesEditable": True,
+                "filesDeletable": True,
+                "files": [
+                    {
+                        "name": "main.py",
+                        "content": f"print(eval('{formula}'))",
+                    },
+                ],
+                "newFileOptions": [
+                    {
+                        "helpText": "New Python file",
+                        "name": "script${i}.py",
+                        "content": "# In main file\n# import script${i}\n# print(script${i}.sum(1, 3))\n\ndef sum(a, b):\n    return a + b",
+                    },
+                ],
+            },
+            "visibility": "public",
+        }
+
+        async with aiohttp.ClientSession() as session:
+            async with session.post(
+                "https://onecompiler.com/api/code/exec", headers=headers, json=json_data
+            ) as response:
+                data = await response.json()
+                ans = data.get("stdout", "出力なし")
+                url = await self.bot.get_gif(str(ans))
+                if not url:
+                    return await ctx.reply(embed=discord.Embed(title="計算結果", color=discord.Color.blue(), description=f"```{ans}```"))
+                await ctx.reply(url)
 
     @commands.command(name="afk")
     @commands.cooldown(1, 5, type=commands.BucketType.guild)
