@@ -2,6 +2,7 @@ import time
 import discord
 from discord.ext import commands
 import aiohttp
+import datetime
 
 cooldown_afk = {}
 
@@ -39,7 +40,7 @@ class HelloCog(commands.Cog):
 > ❔help
 > 👍hello, good, 123
 > 🔍get, search, weather
-> 🧰afk
+> 🧰afk, now
 > 🔨kick, ban
 > 🚫reload
 ''')
@@ -99,6 +100,14 @@ class HelloCog(commands.Cog):
                     else:
                         url = await self.bot.get_gif("分からない")
                         return await ctx.reply(content=url)
+
+    @commands.command(name="now")
+    @commands.cooldown(1, 5, type=commands.BucketType.guild)
+    @commands.guild_only()
+    async def now(self, ctx: commands.Context):
+        t = datetime.datetime.now().strftime('%H時')
+        url = await self.bot.get_gif(t)
+        await ctx.reply(url)
 
     @commands.command(name="afk")
     @commands.cooldown(1, 5, type=commands.BucketType.guild)
