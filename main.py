@@ -18,7 +18,6 @@ class GIFBot(commands.Bot):
         await self.load_extension('cogs.hello')
         await self.load_extension('cogs.error')
         await self.load_extension('cogs.admin')
-        await self.load_extension('cogs.premium')
 
     async def get_gif(self, word: str):
         async with aiohttp.ClientSession() as session:
